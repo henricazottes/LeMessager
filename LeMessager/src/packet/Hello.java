@@ -1,8 +1,9 @@
 package packet;
+import java.io.Serializable;
 import java.net.InetAddress;
 
 
-public class Hello extends Packet {
+public class Hello extends Packet implements Serializable {
 	private String nickname;
 	private InetAddress ip;
 	

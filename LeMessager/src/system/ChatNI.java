@@ -1,65 +1,76 @@
 package system;
  
 import java.net.InetAddress;
+import java.net.UnknownHostException;
+
+import packet.Hello;
  
+import models.User;
 import network.TCPChatNI;
 import network.UDPChatNI;
  
 public class ChatNI {
  
-        private static ChatNI instance;
+        //private static ChatNI instance;
         private UDPChatNI niUDP;
         private TCPChatNI niTCP;
         private ChatController cc;
  
-        private void ChatNI(ChatController cc) {
-                // Constructor
+        public ChatNI(ChatController cc) {
+                // Constructor        	
                 this.cc = cc;
+                this.niUDP = new UDPChatNI(cc);
+                
+                
+                // Start threads for receiving packets
+                this.receivePackets();
                 // ...
         }
+        
+        // Un singleton ne peut pas être une interface....
  
-        public ChatNI getInstance() { // Singleton method
+        /*public ChatNI getInstance(ChatController cc) { // Singleton method
                 if (instance == null) {
-                        instance = new ChatNI();
+                        instance = new ChatNI(cc);
                 }
                 return instance;
         }
        
-        public UDPChatNI getNiUDP() {
-                return niUDP;
-        }
- 
-        public void setNiUDP(UDPChatNI niUDP) {
-                this.niUDP = niUDP;
-        }
- 
-        public TCPChatNI getNiTCP() {
-                return niTCP;
-        }
- 
-        public void setNiTCP(TCPChatNI niTCP) {
-                this.niTCP = niTCP;
-        }
- 
-        public ChatController getChatController() {
-                return cc;
-        }
- 
-        public void setChatController(ChatController cc) {
-                this.cc = cc;
-        }
- 
         public static void setInstance(ChatNI instance) {
                 ChatNI.instance = instance;
-        }
+        }*/
+        
+        
+        // UDP methods ============================
        
-        public void start(InetAddress addr) {
-               
+        public void sendHello(String name){
+        	this.niUDP.sendHello(name);
         }
-       
-        public void exit() {
-                // fermer threads
-               
+        
+        public void sendHelloBack(String name, InetAddress ipDest){
+        	this.niUDP.sendHelloBack(name, ipDest);
         }
+        
+        public void sendGoodbye(String name){
+        	this.niUDP.sendGoodbye(name);
+        }
+        
+        public void sendMessage(User u, String msg){
+        	this.niUDP.sendMessage(u, msg);
+        }
+        
+        public void receivePackets(){
+        	new Thread(this.niUDP).start();
+        	// new Thread(this.niTCP).start();
+        }
+        
+        public Object getLastPacket(){
+        	return this.niUDP.getLastPacket();
+        }
+        
+        // TCP methods ============================
+        
+        
+        
  
 }

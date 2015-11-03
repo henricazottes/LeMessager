@@ -13,14 +13,24 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
+import packet.Bye;
 import packet.Hello;
+import packet.HelloBack;
 import packet.Packet;
 
 import models.User;
 
+import system.ChatController;
 import system.ChatNI;
  
-public class UDPChatNI extends ChatNI {
+public class UDPChatNI implements Runnable {
+	
+		private Object lastPacket;
+		private ChatController cc;
+		
+		public UDPChatNI(ChatController cc){
+			this.cc = cc;
+		}
  
         //public InetAddress getNetworkBroadcastAddresses() {
                
@@ -30,15 +40,77 @@ public class UDPChatNI extends ChatNI {
                
         }
  
-        public void sendHello() {
-        	InetAddress ip;
+        public void sendHello(String name) {        	  	
 			try {
 				
 				// construct packet
-				ip = InetAddress.getByName("127.0.0.1");
-				Hello myHelloPacket = new Hello("Henri&Alfred", ip);
-				byte[] sendData = this.serialize(myHelloPacket);
-				DatagramPacket udpPacket = new DatagramPacket(sendData, sendData.length, ip, 42025);
+				InetAddress ip = InetAddress.getByName("127.0.0.1");
+				Hello myHelloPacket = new Hello(name, ip);
+				
+				// send packet
+				sendBroadcast(myHelloPacket);
+				
+			} catch (UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}		
+			
+			System.out.println("Hello sent.");
+        }
+        
+        public void sendHelloBack(String name, InetAddress ipDest) {        	  	
+			try {
+				
+				// construct packet
+				InetAddress ip = InetAddress.getByName("127.0.0.1");
+				HelloBack myHelloBackPacket = new HelloBack(name, ip);
+				
+				// send packet
+				sendUnicast(myHelloBackPacket, ipDest);
+				
+			} catch (UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}			       	
+        }
+ 
+        public void sendGoodbye(String name) {
+        	try {
+				
+				// construct packet
+				InetAddress ip = InetAddress.getByName("127.0.0.1");
+				Bye myByePacket = new Bye(name, ip);
+				
+				// send packet
+				sendBroadcast(myByePacket);
+				
+			} catch (UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}	
+        	
+        	System.out.println("Goodbye sent.");
+        }
+ 
+        public void sendMessage(User u, String msg) {
+               
+        }
+ 
+        private void sendUnicast(Packet p, InetAddress ipDest) {
+        	try {
+				
+				byte[] sendData = UDPChatNI.serialize(p);
+				DatagramPacket udpPacket;
+				udpPacket = new DatagramPacket(sendData, sendData.length, ipDest, 42025);
 				
 				// create UDP socket
 				DatagramSocket clientSocket = new DatagramSocket();
@@ -48,39 +120,50 @@ public class UDPChatNI extends ChatNI {
 			    
 			    //close socket			    
 			    clientSocket.close();
-			    
-			    // LOGS
-			    System.out.println("Hello sent.");
-			      
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}        	
+			}
+        	
+        	System.out.println(p.getClass() + " sent.");
         }
  
-        public void sendGoodbye() {
-               
-        }
- 
-        public void sendMessage(User u, String mess) {
-               
-        }
- 
-        private void sendUnicast(Packet p, InetAddress addr) {
-               
-        }
- 
-        private void sendBroadcast(Packet p) {
+        private void sendBroadcast(Packet p) {        	
+			try {
+				
+				byte[] sendData = UDPChatNI.serialize(p);
+				DatagramPacket udpPacket;
+				udpPacket = new DatagramPacket(sendData, sendData.length, InetAddress.getByName("255.255.255.255"), 42025);
+				
+				// create UDP socket
+				DatagramSocket clientSocket = new DatagramSocket();
+			    
+				// send packet			    
+			    clientSocket.send(udpPacket);
+			    
+			    //close socket			    
+			    clientSocket.close();
+			} catch (UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
                
         }
         
-        public Object receivePackets(){      	
+               
+        public void receivePackets(){      	
 			try {
 				// create udp socket
 				DatagramSocket serverSocket = new DatagramSocket(42025);
+				serverSocket.setReuseAddress(true);
 				
 				// create buffer
 				byte[] receiveData = new byte[1024];
@@ -90,10 +173,11 @@ public class UDPChatNI extends ChatNI {
 	            {      
 	        		// create new datagramPacket
 	        		DatagramPacket udpPacket = new DatagramPacket(receiveData, receiveData.length);
-	        		System.out.println("Waiting Hello...");
-	                serverSocket.receive(udpPacket);
-	                Hello myHello = (Hello) deserialize(udpPacket.getData());
-					return myHello;
+	        		System.out.println("Waiting packet...");
+	                serverSocket.receive(udpPacket); // blocking
+	                
+					this.setLastPacket(deserialize(udpPacket.getData()));
+					notifyObs();
 	                                         
 	            }
 			} catch (SocketException e1) {
@@ -106,9 +190,21 @@ public class UDPChatNI extends ChatNI {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-			return null;
         }
+
+        
+        public void notifyObs(){
+        	cc.processPackets();
+        }
+        
+        
+		public Object getLastPacket() {
+			return lastPacket;
+		}
+
+		public void setLastPacket(Object lastPacket) {
+			this.lastPacket = lastPacket;
+		}
 
 		public static byte[] serialize(Object obj) throws IOException {
 		    ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -120,6 +216,12 @@ public class UDPChatNI extends ChatNI {
 		    ByteArrayInputStream in = new ByteArrayInputStream(data);
 		    ObjectInputStream is = new ObjectInputStream(in);
 		    return is.readObject();
+		}
+
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			receivePackets();			
 		}
 		
 

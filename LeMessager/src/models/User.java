@@ -26,4 +26,22 @@ public class User {
 	public void setIp(InetAddress ip) {
 		this.ip = ip;
 	}
+	
+	@Override
+	public String toString(){
+		return this.getName() + this.getIp();
+	}
+	
+	@Override
+	public boolean equals(Object object)
+	{
+	    boolean isEqual= false;
+	    
+	    if (object != null && object instanceof User)
+	    {
+	        isEqual = (this.name.equals(((User) object).getName()) && this.ip.equals(((User) object).getIp()));
+	    }
+
+	    return isEqual;
+	}
 }

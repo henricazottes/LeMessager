@@ -18,4 +18,12 @@ public class Bye extends Packet{
 	public void setNickname(String nickname) {
 		this.nickname = nickname;
 	}
+
+	public InetAddress getIp() {
+		return ip;
+	}
+
+	public void setIp(InetAddress ip) {
+		this.ip = ip;
+	}
 }

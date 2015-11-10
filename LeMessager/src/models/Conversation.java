@@ -14,6 +14,6 @@ public class Conversation extends Observable {
 	
 	public void addMessage(Message m){
 		this.conv.add(m);
-		this.notify();
+		//this.notify();
 	}
 }

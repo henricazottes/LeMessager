@@ -8,7 +8,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 
+import models.Conversation;
 import models.User;
+import models.UserList;
 
 import packet.Bye;
 import packet.FileRequest;
@@ -20,8 +22,8 @@ import packet.Message;
 public class ChatController {
 	private ChatNI chatNI;
 	private Object packet;
-	private ArrayList<Message> conv;
-	private ArrayList<User> userList;
+	private Conversation conv;
+	private UserList userList;
 	private InetAddress myIp;
 	private String myName;
 	
@@ -48,8 +50,8 @@ public class ChatController {
 			// LOG
 			System.out.println("My ip: " + this.myIp);
 			
-			this.userList = new ArrayList<User>();
-			this.conv = new ArrayList<Message>();
+			this.userList = new UserList();
+			this.conv = new Conversation();
 			this.myName = "Henri";
 			
 		} catch (UnknownHostException e) {
@@ -89,12 +91,18 @@ public class ChatController {
 			if(!(((Hello) packet).getNickname().equals(this.myName)
 							&& ((Hello) packet).getIp().equals(this.myIp))){ // Hello from me
 				
-				this.userList.add(new User(((Hello) packet).getNickname(),((Hello) packet).getIp()));
+				User newUser = new User(((Hello) packet).getNickname(),((Hello) packet).getIp());
+				
+				if(!this.userList.contains(newUser)){
+					this.userList.addUser(newUser);
+				}
+				
 				
 				// LOG
+				System.out.println(this.userList);
 				System.out.println("New connexion: " + ((Hello) packet).getNickname() + " on " + ((Hello) packet).getIp());
 							
-				this.chatNI.sendHelloBack(this.myName, this.myIp);
+				this.chatNI.sendHelloBack(this.myName, ((Hello) packet).getIp());
 			}else{
 				// LOG
 				System.out.println(" (local hello)");
@@ -106,9 +114,10 @@ public class ChatController {
 			if(!(((HelloBack) packet).getNickname().equals(this.myName)
 					&& ((HelloBack) packet).getIp().equals(this.myIp))){ // HelloBack from me
 				// Add the user in the user list
-				this.userList.add(new User(((HelloBack) packet).getNickname(), ((HelloBack) packet).getIp()));
+				this.userList.addUser(new User(((HelloBack) packet).getNickname(), ((HelloBack) packet).getIp()));
 				// LOG
 				System.out.println("New user added: " + ((HelloBack) packet).getNickname() + " from: " +((HelloBack) packet).getIp());
+				System.out.println(this.userList);
 			}else{
 				// LOG
 				System.out.println(" (local helloback)");
@@ -117,7 +126,7 @@ public class ChatController {
 		}else if (packet instanceof Message){
 			
 			// Add message in conversation
-			this.conv.add((Message) packet);
+			this.conv.addMessage((Message) packet);
 			
 			// LOG
 			System.out.println("New message");
@@ -125,10 +134,10 @@ public class ChatController {
 		}else if (packet instanceof Bye){
 			
 			// Remove the user from the userlist
-			this.userList.remove(new User(((HelloBack) packet).getNickname(), ((HelloBack) packet).getIp()));
-			
+			this.userList.removeUser(new User(((Bye) packet).getNickname(), ((Bye) packet).getIp()));
+			System.out.println(this.userList);
 			// Add a message in the conv.
-			this.conv.add(new Message(new Date(), "System", ((Bye) packet).getNickname() + " has left."));
+			this.conv.addMessage(new Message(new Date(), "System", ((Bye) packet).getNickname() + " has left."));
 			
 		}else if (packet instanceof FileRequest){
 			

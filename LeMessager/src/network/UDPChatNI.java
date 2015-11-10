@@ -182,6 +182,7 @@ public class UDPChatNI implements Runnable {
 		    os.writeObject(obj);
 		    return out.toByteArray();
 		}
+		
 		public static Object deserialize(byte[] data) throws IOException, ClassNotFoundException {
 		    ByteArrayInputStream in = new ByteArrayInputStream(data);
 		    ObjectInputStream is = new ObjectInputStream(in);

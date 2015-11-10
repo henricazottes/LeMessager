@@ -24,12 +24,15 @@ public class ChatGui extends JFrame implements ActionListener, WindowListener{
 	private JButton bconnect;
 	private JTextArea taConv;
 	private JTextArea taMsg;
-	void ChatGUI(){
-		init();
+	
+	public ChatGui(ChatController cc){
+		
+		init(cc);
 	}
 	
-	void init(){
+	void init(ChatController cc){
 		
+		this.cc = cc;
 		 // Connect window
 		 lnickname = new JLabel("Nickname: ");
 		 tfnickname = new JTextField(10); 

@@ -26,11 +26,7 @@ public class  Messager {
 		
 		
 		// Create the 
-		cc.processHello();
-		
-		
-		
-		
+		cc.processHello();	
 		
 		
 		

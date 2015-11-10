@@ -9,6 +9,9 @@ import network.UDPChatNI;
 
 public class  Messager {
 	public static void main(String[] args){
+		
+		// Init system components
+		
 		ChatController cc = null;
 		ChatNI chatNI = null;
 		
@@ -16,17 +19,13 @@ public class  Messager {
 		System.out.print("User name ?: ");
 		String name = scanner.next();
 		
-		try {
-			
-			cc = new ChatController(name, InetAddress.getByName("localhost"));
-			chatNI = new ChatNI(cc);
-			
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		cc = new ChatController();
+		chatNI = new ChatNI(cc);
 		
-		cc.addChatNI(chatNI);		
+		cc.addChatNI(chatNI);	
+		
+		
+		// Create the 
 		cc.processHello();
 		
 		

@@ -44,7 +44,7 @@ public class UDPChatNI implements Runnable {
 			try {
 				
 				// construct packet
-				InetAddress ip = InetAddress.getByName("127.0.0.1");
+				InetAddress ip = InetAddress.getLocalHost();
 				Hello myHelloPacket = new Hello(name, ip);
 				
 				// send packet

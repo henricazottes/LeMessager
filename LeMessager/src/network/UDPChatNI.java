@@ -41,62 +41,32 @@ public class UDPChatNI implements Runnable {
         }
  
         public void sendHello(String name) {        	  	
-			try {
-				
-				// construct packet
-				InetAddress ip = InetAddress.getLocalHost();
-				Hello myHelloPacket = new Hello(name, ip);
-				
-				// send packet
-				sendBroadcast(myHelloPacket);
-				
-			} catch (UnknownHostException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}		
+			// construct packet
+			InetAddress ip = cc.getMyIp();
+			Hello myHelloPacket = new Hello(name, ip);
+			
+			// send packet
+			sendBroadcast(myHelloPacket);		
 			
 			System.out.println("Hello sent.");
         }
         
         public void sendHelloBack(String name, InetAddress ipDest) {        	  	
-			try {
-				
-				// construct packet
-				InetAddress ip = InetAddress.getByName("127.0.0.1");
-				HelloBack myHelloBackPacket = new HelloBack(name, ip);
-				
-				// send packet
-				sendUnicast(myHelloBackPacket, ipDest);
-				
-			} catch (UnknownHostException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}			       	
+			// construct packet
+			InetAddress ip = cc.getMyIp();
+			HelloBack myHelloBackPacket = new HelloBack(name, ip);
+			
+			// send packet
+			sendUnicast(myHelloBackPacket, ipDest);			       	
         }
  
         public void sendGoodbye(String name) {
-        	try {
-				
-				// construct packet
-				InetAddress ip = InetAddress.getByName("127.0.0.1");
-				Bye myByePacket = new Bye(name, ip);
-				
-				// send packet
-				sendBroadcast(myByePacket);
-				
-			} catch (UnknownHostException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}	
+        	// construct packet
+			InetAddress ip = cc.getMyIp();
+			Bye myByePacket = new Bye(name, ip);
+			
+			// send packet
+			sendBroadcast(myByePacket);	
         	
         	System.out.println("Goodbye sent.");
         }

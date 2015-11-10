@@ -9,6 +9,8 @@ import java.awt.event.WindowListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import system.ChatController;
@@ -16,9 +18,12 @@ import system.ChatController;
 public class ChatGui extends JFrame implements ActionListener, WindowListener{
 	
 	private ChatController cc;
+	private JPanel textPanel;
 	private JLabel lnickname;
 	private JTextField tfnickname;
 	private JButton bconnect;
+	private JTextArea taConv;
+	private JTextArea taMsg;
 	void ChatGUI(){
 		init();
 	}
@@ -33,6 +38,14 @@ public class ChatGui extends JFrame implements ActionListener, WindowListener{
 		 
 		 
 		 // Chat window
+		 textPanel = new JPanel();
+		 taConv = new JTextArea(20,45);
+		 taMsg = new JTextArea(2, 45);
+		 
+		 
+		 textPanel.add("North", taConv);
+		 textPanel.add("South", taMsg);
+		 
 		 
 		// configures the JFrame layout using a border layout
 		 this.setLayout(new BorderLayout());
@@ -53,6 +66,7 @@ public class ChatGui extends JFrame implements ActionListener, WindowListener{
 	}
 	
 	void displayChat(){
+		
 		
 	}
 	

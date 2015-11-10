@@ -4,6 +4,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Scanner;
 
+import gui.ChatGui;
 import packet.Hello;
 import network.UDPChatNI;
 
@@ -14,6 +15,7 @@ public class  Messager {
 		
 		ChatController cc = null;
 		ChatNI chatNI = null;
+		ChatGui chatGui = null;
 		
 		Scanner scanner = new Scanner(System.in);
 		System.out.print("User name ?: ");
@@ -21,6 +23,7 @@ public class  Messager {
 		
 		cc = new ChatController();
 		chatNI = new ChatNI(cc);
+		chatGui = new ChatGui(cc);
 		
 		cc.addChatNI(chatNI);	
 		

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 
+import gui.ChatGui;
 import models.Conversation;
 import models.User;
 import models.UserList;
@@ -21,6 +22,7 @@ import packet.Message;
 
 public class ChatController {
 	private ChatNI chatNI;
+	private ChatGui chatGui;
 	private Object packet;
 	private Conversation conv;
 	private UserList userList;
@@ -70,6 +72,10 @@ public class ChatController {
 
 	public void addChatNI(ChatNI chatNI){
 		this.chatNI = chatNI;
+	}
+	
+	public void addChatGui(ChatGui chatGui){
+		this.chatGui = chatGui;
 	}
 	
 	public void processHello(){

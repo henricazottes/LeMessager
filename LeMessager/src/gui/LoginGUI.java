@@ -1,6 +1,7 @@
     package gui;
      
     import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -12,9 +13,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
      
+import javax.annotation.processing.Messager;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -39,13 +43,15 @@ import system.ChatController;
     public class LoginGUI extends JFrame implements ActionListener, WindowListener, FocusListener{
     	
     	       
-        private ChatController cc;  
+        private ChatController cc;
+        private Boolean goodNickname;
        
         public LoginGUI(ChatController cc){
         	super("LeMessager - Connection"); 
         	setBounds(100,100,300,400);   
         	this.setLocationRelativeTo(null);
         	this.cc = cc;
+        	this.goodNickname = false;
         	init();
         }
        
@@ -58,8 +64,6 @@ import system.ChatController;
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             Container con = this.getContentPane(); // inherit main frame
             con.add(panel); // add the panel to frame
-            // customize panel here
-            // pane.add(someWidget);
             
             /* ============
              *     Menu 
@@ -68,7 +72,7 @@ import system.ChatController;
             this.setIconImage(new ImageIcon("img/title_img.png").getImage());
           //Where the GUI is created:
             JMenuBar menuBar;
-            JMenu menu, submenu;
+            JMenu menu;
             JMenuItem menuItem;
 
             //Create the menu bar.
@@ -79,21 +83,8 @@ import system.ChatController;
             menu.setMnemonic(KeyEvent.VK_A);
             menuBar.add(menu);
 
-            //a group of JMenuItems                
-            
-            menuItem = new JMenuItem("Disconnect",new ImageIcon("img/logout.png"));
-			menu.add(menuItem);		
-			menu.addSeparator();
-			
+            //a group of JMenuItems 			
 			menuItem = new JMenuItem("About",new ImageIcon("img/about.png"));
-			menu.add(menuItem);
-			
-			//Build second menu in the menu bar.
-			menu = new JMenu("Edit");
-			menu.setMnemonic(KeyEvent.VK_N);
-			menuBar.add(menu);
-			
-			menuItem = new JMenuItem("Nickname",new ImageIcon("img/edit.png"));
 			menu.add(menuItem);
             
             this.setJMenuBar(menuBar);
@@ -104,19 +95,94 @@ import system.ChatController;
                            
             JLabel logo = new JLabel(new ImageIcon("img/title_img.png"));
             logo.setAlignmentX(CENTER_ALIGNMENT);
-            JTextField nickname = new JTextField();
-            
+            final JTextField nickname = new JTextField();
+            final Border defaultBorder = nickname.getBorder();
             
             nickname.setText("Enter a nickname");
             nickname.setPreferredSize(new Dimension(250,30));
             nickname.setMaximumSize(nickname.getPreferredSize());
             nickname.setAlignmentX(CENTER_ALIGNMENT);
-            //nickname.addFocusListener(this);
             
-            JButton connect = new JButton("Connect");
+            //nickname.addFocusListener(this);            
+            nickname.addFocusListener(new FocusListener() {				
+				@Override
+				public void focusLost(FocusEvent e) {
+					// TODO Auto-generated method stub
+					if(!nickname.getText().equals("Enter a nickname")){
+						nickname.setText(nickname.getText().replace(" ", ""));						
+					}
+					
+					if(nickname.getText().equals("") || nickname.getText().equals("Enter a nickname")){
+						nickname.setText("Enter a nickname");
+						goodNickname = false;
+					}
+				}
+				
+				@Override
+				public void focusGained(FocusEvent e) {
+					// TODO Auto-generated method stub
+					goodNickname = true;
+				}
+			});
+            
+            nickname.addMouseListener(new MouseListener() {
+				
+				@Override
+				public void mouseReleased(MouseEvent arg0) {
+					// TODO Auto-generated method stub
+					
+				}
+				
+				@Override
+				public void mousePressed(MouseEvent arg0) {
+					// TODO Auto-generated method stub
+					if(nickname.getText().equals("Enter a nickname")){
+							nickname.setText("");
+							nickname.setBorder(defaultBorder);
+					}
+				}
+				
+				@Override
+				public void mouseExited(MouseEvent arg0) {
+					// TODO Auto-generated method stub
+					
+				}
+				
+				@Override
+				public void mouseEntered(MouseEvent arg0) {
+					// TODO Auto-generated method stub
+					
+				}
+				
+				@Override
+				public void mouseClicked(MouseEvent arg0) {
+					// TODO Auto-generated method stub
+					
+				}
+			});
+            
+            final JButton connect = new JButton("Connect");
             connect.setPreferredSize(new Dimension(250,30));
             connect.setMaximumSize(connect.getPreferredSize());
             connect.setAlignmentX(CENTER_ALIGNMENT);
+            
+            
+            connect.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					// TODO Auto-generated method stub
+					if(goodNickname){
+						cc.setMyName(nickname.getText());  
+						cc.getChatGUI().setTitle("Connected as " + cc.getMyName());
+						cc.getChatGUI().setVisible(true);
+						cc.getLoginGUI().dispose();
+						System.out.println("Connect pressed " + cc.getMyName());
+						
+					}else{
+						nickname.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.red));
+					}
+				}
+			});
             
             panel.add(Box.createRigidArea(new Dimension(0,15)));
             panel.add(logo);   
@@ -165,30 +231,7 @@ import system.ChatController;
              this.setVisible(true);*/
             
             setVisible(true); // display this frame
-        }
-       
-        void displayConnect(){
-                this.add(tfnickname);
-                this.add(bconnect);
-                this.add(lAlfred);
-        }
-       
-        void displayChat(){
-                //this.remove(lnickname);
-                this.remove(tfnickname);
-                bconnect.removeActionListener(this);
-                this.remove(bconnect);
-                this.remove(lAlfred);
-                this.setSize(600, 500);
-                this.add(lnickname);
-                this.add(taConv);
-                bdisconnect.addActionListener(this);
-                this.add(taUserlist);
-                this.add(lAlfred);
-                this.add(bdisconnect);
-                this.add(taMsg);
-               
-        }
+        }       
        
  
         @Override
@@ -230,46 +273,22 @@ import system.ChatController;
         public void windowOpened(WindowEvent e) {
                 // TODO Auto-generated method stub
                
-        }
- 
-        @Override
-        public void actionPerformed(ActionEvent e) {
-                // TODO Auto-generated method stub
-                if (e.getSource() == bconnect){
-                        this.lnickname.setText(tfnickname.getText());
-                        this.cc.setMyName(tfnickname.getText());
-                        this.displayChat(); // places the components in the layout for Chat
-                        this.cc.processHello();
-                }
-                else if (e.getSource() == bdisconnect){
-                        this.cc.processGoodbye();
-                        try {
-                                Thread.sleep(1000);
-                        } catch (InterruptedException e1) {
-                                // TODO Auto-generated catch block
-                                e1.printStackTrace();
-                        }
-                        System.exit(0);
-                }
-        }
- 
-        public void updateList(String list) {
-                this.taUserlist.setText(list);
-               
-        }
+        }   		
 
 		@Override
-		public void focusGained(FocusEvent e) {
+		public void focusLost(FocusEvent arg0) {
 			// TODO Auto-generated method stub
-			if (e.getSource() == nickname){
-				nickname.setText("");
-				
-			}
 			
 		}
 
 		@Override
-		public void focusLost(FocusEvent arg0) {
+		public void focusGained(FocusEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
 			
 		}

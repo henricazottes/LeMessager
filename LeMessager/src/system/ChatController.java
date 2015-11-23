@@ -3,31 +3,34 @@
     package system;
      
     import java.net.InetAddress;
-    import java.net.NetworkInterface;
-    import java.net.SocketException;
-    import java.net.UnknownHostException;
-    import java.util.ArrayList;
-    import java.util.Date;
-    import java.util.Enumeration;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Enumeration;
      
+import gui.ChatGUI;
     import gui.LoginGUI;
-    import models.Conversation;
-    import models.User;
-    import models.UserList;
+import models.Conversation;
+import models.User;
+import models.UserList;
      
     import packet.Bye;
-    import packet.FileRequest;
-    import packet.FileResponse;
-    import packet.Hello;
-    import packet.HelloBack;
-    import packet.Message;
+import packet.FileRequest;
+import packet.FileResponse;
+import packet.Hello;
+import packet.HelloBack;
+import packet.Message;
      
     public class ChatController {
             private ChatNI chatNI;
-            private LoginGUI chatGui;
+            private ChatGUI chatGUI;
+            private LoginGUI loginGUI;
             private Object packet;
             private Conversation conv;
             private UserList userList;
+            
      
             private InetAddress myIp;
             private String myName;
@@ -57,7 +60,7 @@
                            
                             this.userList = new UserList();
                             this.conv = new Conversation();
-                            //this.myName = "Alfred";
+                            this.myName = "";
                            
                     } catch (UnknownHostException e) {
                             // TODO Auto-generated catch block
@@ -77,9 +80,21 @@
                     this.chatNI = chatNI;
             }
            
-            public void addChatGui(LoginGUI chatGui){
-                    this.chatGui = chatGui;
+            public void addChatGUI(ChatGUI chatGui){
+                    this.chatGUI = chatGui;
             }
+            
+            public ChatGUI getChatGUI(){
+            	return this.chatGUI;
+            }
+            
+            public void addLoginGUI(LoginGUI loginGui){
+                this.loginGUI = loginGui;
+	        }
+	        
+	        public LoginGUI getLoginGUI(){
+	        	return this.loginGUI;
+	        }
            
             public void processHello(){
                     this.chatNI.sendHello(this.myName);
@@ -104,7 +119,7 @@
                                    
                                     if(!this.userList.contains(newUser)){
                                             this.userList.addUser(newUser);
-                                            this.chatGui.updateList(this.getUserListText()); // TEST affichage userlist dans le GUI
+                                            this.chatGUI.updateList(this.getUserListText()); // TEST affichage userlist dans le GUI
                                     }
                                    
                                    
@@ -126,7 +141,7 @@
                                             && ((HelloBack) packet).getIp().equals(this.myIp))){ // HelloBack from me
                                     // Add the user in the user list
                                     this.userList.addUser(new User(((HelloBack) packet).getNickname(), ((HelloBack) packet).getIp()));
-                                    this.chatGui.updateList(this.getUserListText()); // TEST affichage userlist dans le GUI
+                                    this.chatGUI.updateList(this.getUserListText()); // TEST affichage userlist dans le GUI
                                     // LOG
                                     System.out.println("New user added: " + ((HelloBack) packet).getNickname() + " from: " +((HelloBack) packet).getIp());
                                     System.out.println(this.userList);
@@ -148,7 +163,7 @@
                             // Remove the user from the userlist
                             this.userList.removeUser(new User(((Bye) packet).getNickname(), ((Bye) packet).getIp()));
                             System.out.println(this.userList);
-                            this.chatGui.updateList(this.getUserListText()); // TEST affichage userlist dans le GUI
+                            this.chatGUI.updateList(this.getUserListText()); // TEST affichage userlist dans le GUI
                             // Add a message in the conv.
                             this.conv.addMessage(new Message(new Date(), "System", ((Bye) packet).getNickname() + " has left."));
                            

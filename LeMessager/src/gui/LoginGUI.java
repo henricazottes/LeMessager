@@ -174,9 +174,10 @@ import system.ChatController;
 					if(goodNickname){
 						cc.setMyName(nickname.getText());  
 						cc.getChatGUI().setTitle("Connected as " + cc.getMyName());
-						cc.getChatGUI().setVisible(true);
-						cc.getLoginGUI().dispose();
+						cc.getChatGUI().setVisible(true);	// switch to ChatGUI
+						cc.getLoginGUI().dispose();			// close LoginGUI
 						System.out.println("Connect pressed " + cc.getMyName());
+						cc.processHello();
 						
 					}else{
 						nickname.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.red));

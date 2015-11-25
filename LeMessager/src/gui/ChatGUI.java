@@ -25,15 +25,22 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.ListModel;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
+import models.User;
+import system.ChatController;
+
 public class ChatGUI extends JFrame implements ActionListener, WindowListener, FocusListener{
 	
-	public ChatGUI(){
+	private ChatController cc;
+	
+	public ChatGUI(ChatController cc){
 		super(); 
+		this.cc = cc;
     	setBounds(100,100,800,600);   
     	this.setLocationRelativeTo(null);
     	//String[] argsthis.cc = cc;
@@ -73,6 +80,7 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
         //a group of JMenuItems                
         
         menuItem = new JMenuItem("Disconnect",new ImageIcon("img/logout.png"));
+        menuItem.addActionListener(this);
 		menu.add(menuItem);		
 		menu.addSeparator();
 		
@@ -91,8 +99,8 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
         
         // List part
         JPanel listPanel = new JPanel(new BorderLayout());
-        String[] data = {"Broadcast","Henri", "Alfred", "Helene", "Pierre", "Tartanpion", "Arthur", "Titicaca"};
-        JList<String> myList = new JList<String>(data);
+        //String[] data = {"Broadcast","Henri", "Alfred", "Helene", "Pierre", "Tartanpion", "Arthur", "Titicaca"};
+        JList myList = new JList(cc.getUserList().getUserList().toArray());
         JScrollPane listScroller = new JScrollPane(myList);
         listScroller.setPreferredSize(new Dimension(220, listScroller.getHeight()));
         listPanel.add(listScroller, "West");
@@ -112,6 +120,7 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
         JPanel convPanel = new JPanel();
         convPanel.setLayout(new BoxLayout(convPanel, BoxLayout.PAGE_AXIS));
         JTextArea recvMessage = new JTextArea();
+        recvMessage.setEditable(false);
         
         convPanel.add(recvMessage);
         convPanel.setBorder(new CompoundBorder(marginBottom, depth));
@@ -121,6 +130,7 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
         // Textfield + Button
         JTextField sendMessage = new JTextField();
         JButton send = new JButton("Send");
+        //send.addActionListener(this);
         JPanel messagePanel = new JPanel();
         messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.LINE_AXIS));
         messagePanel.add(sendMessage);
@@ -149,7 +159,7 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
         
         
         
-        //setVisible(true); // display this frame
+        //setVisible(true); // display this frame // now this method is called in LoginGUI to switch from Login to Chat
 	}
 
 	@Override
@@ -209,7 +219,8 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		// TODO Auto-generated method stub
-		
+		this.cc.processGoodbye();
+		System.exit(0);
 	}
 
 	public void updateList(String userListText) {

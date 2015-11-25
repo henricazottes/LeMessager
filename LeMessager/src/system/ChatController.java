@@ -119,7 +119,7 @@ import packet.Message;
                                    
                                     if(!this.userList.contains(newUser)){
                                             this.userList.addUser(newUser);
-                                            this.chatGUI.updateList(this.getUserListText()); // TEST affichage userlist dans le GUI
+                                            //this.chatGUI.updateList(this.getUserListText()); // TEST affichage userlist dans le GUI
                                     }
                                    
                                    
@@ -141,7 +141,7 @@ import packet.Message;
                                             && ((HelloBack) packet).getIp().equals(this.myIp))){ // HelloBack from me
                                     // Add the user in the user list
                                     this.userList.addUser(new User(((HelloBack) packet).getNickname(), ((HelloBack) packet).getIp()));
-                                    this.chatGUI.updateList(this.getUserListText()); // TEST affichage userlist dans le GUI
+                                    //this.chatGUI.updateList(this.getUserListText()); // TEST affichage userlist dans le GUI
                                     // LOG
                                     System.out.println("New user added: " + ((HelloBack) packet).getNickname() + " from: " +((HelloBack) packet).getIp());
                                     System.out.println(this.userList);
@@ -163,7 +163,7 @@ import packet.Message;
                             // Remove the user from the userlist
                             this.userList.removeUser(new User(((Bye) packet).getNickname(), ((Bye) packet).getIp()));
                             System.out.println(this.userList);
-                            this.chatGUI.updateList(this.getUserListText()); // TEST affichage userlist dans le GUI
+                            //this.chatGUI.updateList(this.getUserListText()); // TEST affichage userlist dans le GUI
                             // Add a message in the conv.
                             this.conv.addMessage(new Message(new Date(), "System", ((Bye) packet).getNickname() + " has left."));
                            
@@ -182,11 +182,15 @@ import packet.Message;
             public void setMyName(String myName) {
                     this.myName = myName;
             }
+            
+            public UserList getUserList() {
+            	return this.userList;
+            }
            
             // Méthode pour récupérer la liste (elle sera envoyée au GUI par la méthode updateList dans ChatGUI)
-            public String getUserListText() {
-                    return this.userList.toString();
-            }
+           // public String getUserListText() {
+            //        return this.getUserList();
+            //}
      
     }
 

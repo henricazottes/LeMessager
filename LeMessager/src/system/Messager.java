@@ -21,7 +21,7 @@ import network.UDPChatNI;
                 cc = new ChatController();
                 chatNI = new ChatNI(cc);  
                 loginGUI = new LoginGUI(cc);  
-                chatGUI = new ChatGUI();
+                chatGUI = new ChatGUI(cc);
                 
                 cc.addChatNI(chatNI);
                 cc.addChatGUI(chatGUI); 

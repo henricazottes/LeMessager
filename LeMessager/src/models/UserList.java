@@ -7,6 +7,7 @@ import java.util.Iterator;
 import designPatterns.Observable;
 
 public class UserList extends Observable {
+
 	private ArrayList<User> userList;
 	
 	public UserList(){
@@ -27,6 +28,7 @@ public class UserList extends Observable {
 		}
 	}
 	
+	
 	@Override
 	public String toString(){
 		
@@ -40,11 +42,17 @@ public class UserList extends Observable {
 		
 		return result;
 	}
+	
+	
 
 	public boolean contains(User newUser) {
 		// TODO Auto-generated method stub
 		return this.userList.contains(newUser);
 	}	
+	
+	public ArrayList<User> getUserList() {
+		return userList;
+	}
 	
 } 
  

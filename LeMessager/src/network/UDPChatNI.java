@@ -16,6 +16,7 @@ import java.net.UnknownHostException;
 import packet.Bye;
 import packet.Hello;
 import packet.HelloBack;
+import packet.Message;
 import packet.Packet;
 
 import models.User;
@@ -71,7 +72,8 @@ public class UDPChatNI implements Runnable {
         	System.out.println("Goodbye sent.");
         }
  
-        public void sendMessage(User u, String msg) {
+        public void sendMessage(Message msg) {
+        	sendBroadcast(msg);
                
         }
  

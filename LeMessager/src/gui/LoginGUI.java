@@ -17,7 +17,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-     
+import java.util.Date;
+
 import javax.annotation.processing.Messager;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -37,7 +38,8 @@ import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.border.Border;
-     
+
+import packet.Message;
 import system.ChatController;
      
     public class LoginGUI extends JFrame implements ActionListener, WindowListener, FocusListener{
@@ -185,8 +187,26 @@ import system.ChatController;
 				}
 			});
             
+            nickname.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					// TODO Auto-generated method stub
+					if(goodNickname){
+						cc.setMyName(nickname.getText());  
+						cc.getChatGUI().setTitle("Connected as " + cc.getMyName());
+						cc.getChatGUI().setVisible(true);	// switch to ChatGUI
+						cc.getLoginGUI().dispose();			// close LoginGUI
+						System.out.println("Connect pressed " + cc.getMyName());
+						cc.processHello();
+						
+					}else{
+						nickname.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.red));
+					}
+				}
+			});
+            
             panel.add(Box.createRigidArea(new Dimension(0,15)));
-            panel.add(logo);   
+            panel.add(logo);
             panel.add(Box.createRigidArea(new Dimension(0,30)));
             panel.add(nickname);
             panel.add(Box.createRigidArea(new Dimension(0,10)));

@@ -5,6 +5,7 @@ public class Message extends Packet{
 	private Date time;
 	private String from;
 	private String payload;
+	static final long serialVersionUID = 45L;
 	
 	public Message(Date time, String from, String payload){
 		this.time = time;

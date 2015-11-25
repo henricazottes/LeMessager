@@ -4,10 +4,13 @@ import java.util.ArrayList;
 
 import java.util.Iterator;
 
+import javax.swing.DefaultListModel;
+
 import designPatterns.Observable;
 
 public class UserList extends Observable {
 
+	//private DefaultListModel userList;
 	private ArrayList<User> userList;
 	
 	public UserList(){
@@ -16,6 +19,7 @@ public class UserList extends Observable {
 	
 	public void addUser(User u){
 		this.userList.add(u);
+		//this.nameList.addElement(u);
 		//this.notifyObs();
 	}
 	
@@ -24,6 +28,7 @@ public class UserList extends Observable {
 		while (it.hasNext()) {
 		  if(it.next().equals(u)){
 			  it.remove();
+			  
 		  }
 		}
 	}

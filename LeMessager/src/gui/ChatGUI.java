@@ -1,6 +1,7 @@
 package gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -10,10 +11,12 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.Date;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -30,17 +33,25 @@ import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ListDataListener;
 
 import models.User;
+import packet.Message;
 import system.ChatController;
 
 public class ChatGUI extends JFrame implements ActionListener, WindowListener, FocusListener{
 	
 	private ChatController cc;
+	private DefaultListModel<User> listModel;
+	private JList<User> myList;
+	private JTextArea recvMessage;
+	private JScrollPane listScroller;
 	
 	public ChatGUI(ChatController cc){
 		super(); 
 		this.cc = cc;
+		this.listModel = new DefaultListModel<User>();
+		this.myList = new JList<User>(this.listModel);
     	setBounds(100,100,800,600);   
     	this.setLocationRelativeTo(null);
     	//String[] argsthis.cc = cc;
@@ -100,7 +111,8 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
         // List part
         JPanel listPanel = new JPanel(new BorderLayout());
         //String[] data = {"Broadcast","Henri", "Alfred", "Helene", "Pierre", "Tartanpion", "Arthur", "Titicaca"};
-        JList myList = new JList(cc.getUserList().getUserList().toArray());
+        //JList myList = new JList(cc.getUserList().getUserList().toArray());
+        
         JScrollPane listScroller = new JScrollPane(myList);
         listScroller.setPreferredSize(new Dimension(220, listScroller.getHeight()));
         listPanel.add(listScroller, "West");
@@ -119,7 +131,7 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
         // TextArea       
         JPanel convPanel = new JPanel();
         convPanel.setLayout(new BoxLayout(convPanel, BoxLayout.PAGE_AXIS));
-        JTextArea recvMessage = new JTextArea();
+        recvMessage = new JTextArea();
         recvMessage.setEditable(false);
         
         convPanel.add(recvMessage);
@@ -128,8 +140,28 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
         
         
         // Textfield + Button
-        JTextField sendMessage = new JTextField();
+        final JTextField sendMessage = new JTextField();
+        
         JButton send = new JButton("Send");
+        send.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				
+				cc.sendMessage(new Message(new Date(), cc.getMyName(), sendMessage.getText()));
+				sendMessage.setText("");
+			}
+		});
+        
+        sendMessage.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				
+				cc.sendMessage(new Message(new Date(), cc.getMyName(), sendMessage.getText()));
+				sendMessage.setText("");
+			}
+		});
         //send.addActionListener(this);
         JPanel messagePanel = new JPanel();
         messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.LINE_AXIS));
@@ -223,9 +255,20 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
 		System.exit(0);
 	}
 
-	public void updateList(String userListText) {
-		// TODO Auto-generated method stub
-		System.out.println("Updated");
+	public void updateList() {
+		// TODO Auto-generated method stu
+		listModel.removeAllElements();
+		for (User user : cc.getUserList().getUserList()) {
+			listModel.addElement(user);
+		}
+		//System.out.println("==========\nATTENTION GROS DEBUG DE PORC : \n"+ cc.getUserList().toStringArray().toArray());
+		System.out.println("Updated the list");
+		this.repaint();
+	}
+	
+	public void updateConv(String userName, String message) {
+		this.recvMessage.setText(this.recvMessage.getText()+"\n"+userName+" : "+message);
+		this.repaint();
 	}
 
 }

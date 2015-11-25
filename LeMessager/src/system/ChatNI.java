@@ -4,7 +4,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import packet.Hello;
- 
+import packet.Message;
 import models.User;
 import network.TCPChatNI;
 import network.UDPChatNI;
@@ -55,8 +55,8 @@ public class ChatNI {
         	this.niUDP.sendGoodbye(name);
         }
         
-        public void sendMessage(User u, String msg){
-        	this.niUDP.sendMessage(u, msg);
+        public void sendMessage(User u, Message msg){
+        	this.niUDP.sendMessage(msg);
         }
         
         public void receivePackets(){

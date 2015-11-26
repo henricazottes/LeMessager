@@ -16,4 +16,13 @@ public class Conversation extends Observable {
 		this.conv.add(m);
 		//this.notify();
 	}
+	
+	public Message getLastMessage() {
+		if (conv.size() <= 0) {
+			return null;
+		}
+		else {
+			return conv.get(conv.size()-1);
+		}
+	}
 }

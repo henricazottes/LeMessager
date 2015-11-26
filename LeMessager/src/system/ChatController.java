@@ -161,7 +161,12 @@ import packet.Message;
                            
                             // Add message in conversation
                             this.conv.addMessage((Message) packet);
-                            this.chatGUI.updateConv(((Message) packet).getFrom(),((Message) packet).getPayload());
+                            this.chatGUI.updateConv();
+                            User newUser = new User(((Message) packet).getFrom(),((Message) packet).getIp());
+                            if(!this.userList.contains(newUser)){
+                            	this.userList.addUser(newUser);
+                            }
+                            
                            
                             // LOG
                             System.out.println("New message : \n" + ((Message) packet).getPayload());
@@ -203,7 +208,7 @@ import packet.Message;
             }
             
             public Conversation getConv() {
-				return conv;
+				return this.conv;
 			}
 
 			public void setConv(Conversation conv) {

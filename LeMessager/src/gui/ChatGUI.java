@@ -290,9 +290,9 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
 		this.repaint();
 	}
 	
-	public void updateConv(String userName, String message) {
-		this.recvMessage.setText(this.recvMessage.getText()+"\n"+userName+" : "+message);
+	public void updateConv() {
+		this.recvMessage.setText(this.recvMessage.getText()+"\n"+cc.getConv().getLastMessage().getFrom()+" : "+cc.getConv().getLastMessage().getPayload());
 		this.repaint();
 	}
-
+	//setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
 }

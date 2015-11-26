@@ -33,6 +33,8 @@ import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListDataListener;
 
 import models.User;
@@ -133,8 +135,30 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
         convPanel.setLayout(new BoxLayout(convPanel, BoxLayout.PAGE_AXIS));
         recvMessage = new JTextArea();
         recvMessage.setEditable(false);
+        recvMessage.getDocument().addDocumentListener(new DocumentListener() {
+			
+			@Override
+			public void removeUpdate(DocumentEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void insertUpdate(DocumentEvent arg0) {
+				// TODO Auto-generated method stub
+				recvMessage.setCaretPosition(recvMessage.getDocument().getLength()); 
+				System.out.println("youhou");
+			}
+			
+			@Override
+			public void changedUpdate(DocumentEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
         
-        convPanel.add(recvMessage);
+        JScrollPane recvMessageScroller = new JScrollPane(recvMessage);
+        convPanel.add(recvMessageScroller);
         convPanel.setBorder(new CompoundBorder(marginBottom, depth));
         
         

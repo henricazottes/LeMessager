@@ -173,7 +173,12 @@ import packet.Message;
                             System.out.println(this.userList);
                             //this.chatGUI.updateList(this.getUserListText()); // TEST affichage userlist dans le GUI
                             // Add a message in the conv.
-                            this.conv.addMessage(new Message(new Date(), "System", ((Bye) packet).getNickname() + " has left."));
+                            try {
+								this.conv.addMessage(new Message(new Date(), "System", ((Bye) packet).getNickname() + " has left.", InetAddress.getByName("0.0.0.0")));
+							} catch (UnknownHostException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
                             this.chatGUI.updateList();
                             this.chatGUI.repaint();
                             

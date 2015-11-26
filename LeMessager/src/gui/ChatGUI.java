@@ -148,7 +148,7 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
 				
-				cc.sendMessage(new Message(new Date(), cc.getMyName(), sendMessage.getText()));
+				cc.sendMessage(new Message(new Date(), cc.getMyName(), sendMessage.getText(), cc.getMyIp()));
 				sendMessage.setText("");
 			}
 		});
@@ -158,7 +158,7 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
 				
-				cc.sendMessage(new Message(new Date(), cc.getMyName(), sendMessage.getText()));
+				cc.sendMessage(new Message(new Date(), cc.getMyName(), sendMessage.getText(), cc.getMyIp()));
 				sendMessage.setText("");
 			}
 		});

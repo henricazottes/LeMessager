@@ -38,7 +38,10 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListDataListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
+import models.Conversation;
 import models.User;
 import packet.Message;
 import system.ChatController;
@@ -48,16 +51,23 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
 	private ChatController cc;
 	private DefaultListModel<User> listModel;
 	private JList<User> myList;
+	public JList<User> getMyList() {
+		return myList;
+	}
+
 	private JTextArea recvMessage;
 	private JScrollPane listScroller;
 	
 	public ChatGUI(ChatController cc){
 		super(); 
 		this.cc = cc;
+		this.cc.createBroadcast();
+		this.cc.createRobot();
 		this.listModel = new DefaultListModel<User>();
 		this.myList = new JList<User>(this.listModel);
     	setBounds(100,100,800,600);   
     	this.setLocationRelativeTo(null);
+    	
     	//String[] argsthis.cc = cc;
     	init();
 	}
@@ -113,6 +123,19 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
         this.setJMenuBar(menuBar);
         
         // List part
+        
+        this.myList.addListSelectionListener(new ListSelectionListener() {			
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				// TODO Auto-generated method stub
+				if (e.getValueIsAdjusting()) {
+					cc.setConv(cc.getConvs().get(cc.getChatGUI().getMyList().getSelectedValue().getName()));
+					recvMessage.setText(cc.getConv().toString());
+					System.out.println("coucou");
+	            }
+			}
+		});
+        
         JPanel listPanel = new JPanel(new BorderLayout());
         //String[] data = {"Broadcast","Henri", "Alfred", "Helene", "Pierre", "Tartanpion", "Arthur", "Titicaca"};
         //JList myList = new JList(cc.getUserList().getUserList().toArray());
@@ -149,7 +172,6 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
 			public void insertUpdate(DocumentEvent arg0) {
 				// TODO Auto-generated method stub
 				recvMessage.setCaretPosition(recvMessage.getDocument().getLength()); 
-				System.out.println("youhou");
 			}
 			
 			@Override
@@ -173,8 +195,10 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				cc.sendMessage(myList.getSelectedValue(), new Message(new Date(), cc.getMyName(), sendMessage.getText(), cc.getMyIp(), myList.getSelectedValue().getName().equals("BROADCAST")));
-				recvMessage.setText(recvMessage.getText()+"\n"+cc.getMyName()+" : "+sendMessage.getText());
+				Message msg = new Message(new Date(), cc.getMyName(), sendMessage.getText(), cc.getMyIp(), myList.getSelectedValue().getName().equals("BROADCAST"));
+				cc.sendMessage(myList.getSelectedValue(), msg);
+				cc.getConv().addMessage(msg);
+				recvMessage.setText(cc.getConv().toString());
 				sendMessage.setText("");
 			}
 		});
@@ -183,8 +207,10 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				cc.sendMessage(myList.getSelectedValue(),new Message(new Date(), cc.getMyName(), sendMessage.getText(), cc.getMyIp(), myList.getSelectedValue().getName().equals("BROADCAST")));
-				recvMessage.setText(recvMessage.getText()+"\n"+cc.getMyName()+" : "+sendMessage.getText());
+				Message msg = new Message(new Date(), cc.getMyName(), sendMessage.getText(), cc.getMyIp(), myList.getSelectedValue().getName().equals("BROADCAST"));
+				cc.sendMessage(myList.getSelectedValue(), msg);
+				cc.getConv().addMessage(msg);
+				recvMessage.setText(cc.getConv().toString());
 				sendMessage.setText("");
 			}
 		});
@@ -295,8 +321,9 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
 		this.repaint();
 	}
 	
-	public void updateConv() {
-		this.recvMessage.setText(this.recvMessage.getText()+"\n"+cc.getConv().getLastMessage().getFrom()+" : "+cc.getConv().getLastMessage().getPayload());
+	public void updateConv(Conversation conv) {
+		//this.recvMessage.setText(this.recvMessage.getText()+"\n"+cc.getConv().getLastMessage().getFrom()+" : "+cc.getConv().getLastMessage().getPayload());
+		this.recvMessage.setText(conv.toString());
 		this.repaint();
 	}
 }

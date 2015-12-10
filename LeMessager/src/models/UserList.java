@@ -16,11 +16,7 @@ public class UserList extends Observable {
 	private ArrayList<User> userList;
 	
 	public UserList() throws UnknownHostException{
-		this.userList = new ArrayList<User>();
-		User bc = new User("BROADCAST", InetAddress.getByName("255.255.255.255"));
-		this.userList.add(bc);
-		System.out.println("user broadcast créé");
-		System.out.println(userList.toString());
+		this.userList = new ArrayList<User>();		
 	}
 	
 	public void addUser(User u){

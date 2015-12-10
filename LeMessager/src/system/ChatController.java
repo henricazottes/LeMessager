@@ -9,7 +9,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
-     
+import java.util.HashMap;
+
 import gui.ChatGUI;
     import gui.LoginGUI;
 import models.Conversation;
@@ -29,6 +30,15 @@ import packet.Message;
             private LoginGUI loginGUI;
             private Object packet;
             private Conversation conv;
+            private HashMap<String, Conversation> convs;
+			public HashMap<String, Conversation> getConvs() {
+				return convs;
+			}
+
+			public void setConvs(HashMap<String, Conversation> convs) {
+				this.convs = convs;
+			}
+
 			private UserList userList;
 			private Boolean notFound;
             private InetAddress myIp;
@@ -36,58 +46,60 @@ import packet.Message;
             private String OS = System.getProperty("os.name").toLowerCase();
            
             public ChatController(){   
-            	this.notFound = true;
                     try {
-                           
-                            this.myIp = InetAddress.getLocalHost();
-                            try {
-                            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-                            if (OS.indexOf("win") >= 0) {
-                            	while (interfaces.hasMoreElements() && notFound) {
-                                    NetworkInterface iface = interfaces.nextElement();
-                                    // filters out 127.0.0.1 and inactive interfaces
-                                    if (iface.isLoopback() || !iface.isUp())
-                                        continue;
-         
-                                    Enumeration<InetAddress> addresses = iface.getInetAddresses();
-                                    while(addresses.hasMoreElements() && notFound) {
-                                        this.myIp = addresses.nextElement();  
-                                        System.out.println("My ip: " + this.myIp);
-                                        System.out.println(this.myIp.getHostName().matches("^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$"));
-                                        if(this.myIp.getHostName().matches("^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$")){
-                                            this.notFound = false;
-                                        }
+                    	this.notFound = true;
+                    	this.convs = new HashMap<String, Conversation>();          	
+                    	
+                       
+                        this.myIp = InetAddress.getLocalHost();
+                        try {
+                        Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+                        if (OS.indexOf("win") >= 0) {
+                        	while (interfaces.hasMoreElements() && notFound) {
+                                NetworkInterface iface = interfaces.nextElement();
+                                // filters out 127.0.0.1 and inactive interfaces
+                                if (iface.isLoopback() || !iface.isUp())
+                                    continue;
+     
+                                Enumeration<InetAddress> addresses = iface.getInetAddresses();
+                                while(addresses.hasMoreElements() && notFound) {
+                                    this.myIp = addresses.nextElement();  
+                                    System.out.println("My ip: " + this.myIp);
+                                    System.out.println(this.myIp.getHostName().matches("^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$"));
+                                    if(this.myIp.getHostName().matches("^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$")){
+                                        this.notFound = false;
                                     }
-                                    System.out.println("====");
+                                }
+                                System.out.println("====");
+                            }
+                        }
+                        else {
+                        	while (interfaces.hasMoreElements()) {
+                                NetworkInterface iface = interfaces.nextElement();
+                                // filters out 127.0.0.1 and inactive interfaces
+                                if (iface.isLoopback() || !iface.isUp())
+                                    continue;
+     
+                                Enumeration<InetAddress> addresses = iface.getInetAddresses();
+                                while(addresses.hasMoreElements()) {
+                                    this.myIp = addresses.nextElement();                           
                                 }
                             }
-                            else {
-                            	while (interfaces.hasMoreElements()) {
-                                    NetworkInterface iface = interfaces.nextElement();
-                                    // filters out 127.0.0.1 and inactive interfaces
-                                    if (iface.isLoopback() || !iface.isUp())
-                                        continue;
-         
-                                    Enumeration<InetAddress> addresses = iface.getInetAddresses();
-                                    while(addresses.hasMoreElements()) {
-                                        this.myIp = addresses.nextElement();                           
-                                    }
-                                }
-                            } 
-                        } catch (SocketException e) {
-                            throw new RuntimeException(e);
-                        }
-                            // LOG
-                            System.out.println("My ip: " + this.myIp);
-                           
-                            this.userList = new UserList();
-                            this.conv = new Conversation();
-                            this.myName = "";
-                           
-                    } catch (UnknownHostException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
+                        } 
+                    } catch (SocketException e) {
+                        throw new RuntimeException(e);
                     }
+                        // LOG
+                        System.out.println("My ip: " + this.myIp);
+                       
+                        this.userList = new UserList();
+                        this.conv = new Conversation();
+                        this.myName = "";
+                       
+                } catch (UnknownHostException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                }
             }
            
             public InetAddress getMyIp() {
@@ -130,6 +142,34 @@ import packet.Message;
             public void sendMessage(User u, Message msg){
             	this.chatNI.sendMessage(u, msg);
             }
+            
+            public void createBroadcast(){
+            	User bc;
+				try {
+					bc = new User("BROADCAST", InetAddress.getByName("255.255.255.255"));
+					this.userList.addUser(bc);
+	        		System.out.println("user broadcast créé");
+	        		System.out.println(userList.toString());
+	        		this.convs.put("BROADCAST", new Conversation());
+				} catch (UnknownHostException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}		        		
+            }
+            
+            public void createRobot(){
+            	User bc;
+				try {
+					bc = new User("ROBOT", InetAddress.getByName("255.255.255.255"));
+					this.userList.addUser(bc);
+	        		System.out.println("user broadcast créé");
+	        		System.out.println(userList.toString());
+	        		this.convs.put("ROBOT", new Conversation());
+				} catch (UnknownHostException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}		        		
+            }
            
             public void processPackets(){
                     packet = this.chatNI.getLastPacket();
@@ -146,6 +186,7 @@ import packet.Message;
                                     if(!this.userList.contains(newUser)){
                                             this.userList.addUser(newUser);
                                             this.chatGUI.updateList();
+                                            this.convs.put(((Hello) packet).getNickname(), new Conversation());
                                             this.chatGUI.repaint();
                                             //this.chatGUI.updateList(this.getUserListText()); // TEST affichage userlist dans le GUI
                                     }
@@ -184,12 +225,16 @@ import packet.Message;
                            
                             // Add message in conversation
                     	if (!((Message) packet).getIp().equals(this.myIp)) {
-                            this.conv.addMessage((Message) packet);
-                            this.chatGUI.updateConv();
-                            User newUser = new User(((Message) packet).getFrom(),((Message) packet).getIp());
+                    		User newUser = new User(((Message) packet).getFrom(),((Message) packet).getIp());
                             if(!this.userList.contains(newUser)){
                             	this.userList.addUser(newUser);
+                            	this.convs.put(((Hello) packet).getNickname(), new Conversation());
                             }
+                            
+                            this.convs.get(((Message) packet).getFrom()).addMessage((Message) packet);
+                            this.setConv(this.convs.get(((Message) packet).getFrom()));
+                            this.chatGUI.updateConv(this.convs.get(((Message) packet).getFrom()));
+                            
                     	}
                             
                            

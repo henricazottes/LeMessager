@@ -173,7 +173,7 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				cc.sendMessage(myList.getSelectedValue(), new Message(new Date(), cc.getMyName(), sendMessage.getText(), cc.getMyIp()));
+				cc.sendMessage(myList.getSelectedValue(), new Message(new Date(), cc.getMyName(), sendMessage.getText(), cc.getMyIp(), myList.getSelectedValue().getName().equals("BROADCAST")));
 				recvMessage.setText(recvMessage.getText()+"\n"+cc.getMyName()+" : "+sendMessage.getText());
 				sendMessage.setText("");
 			}
@@ -183,8 +183,7 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				
-				cc.sendMessage(myList.getSelectedValue(),new Message(new Date(), cc.getMyName(), sendMessage.getText(), cc.getMyIp()));
+				cc.sendMessage(myList.getSelectedValue(),new Message(new Date(), cc.getMyName(), sendMessage.getText(), cc.getMyIp(), myList.getSelectedValue().getName().equals("BROADCAST")));
 				recvMessage.setText(recvMessage.getText()+"\n"+cc.getMyName()+" : "+sendMessage.getText());
 				sendMessage.setText("");
 			}

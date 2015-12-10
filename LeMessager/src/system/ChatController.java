@@ -30,27 +30,50 @@ import packet.Message;
             private Object packet;
             private Conversation conv;
 			private UserList userList;
-
+			private Boolean notFound;
             private InetAddress myIp;
             private String myName;
+            private String OS = System.getProperty("os.name").toLowerCase();
            
-            public ChatController(){               
+            public ChatController(){   
+            	this.notFound = true;
                     try {
                            
                             this.myIp = InetAddress.getLocalHost();
                             try {
                             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-                            while (interfaces.hasMoreElements()) {
-                                NetworkInterface iface = interfaces.nextElement();
-                                // filters out 127.0.0.1 and inactive interfaces
-                                if (iface.isLoopback() || !iface.isUp())
-                                    continue;
-     
-                                Enumeration<InetAddress> addresses = iface.getInetAddresses();
-                                while(addresses.hasMoreElements()) {
-                                    this.myIp = addresses.nextElement();                           
+                            if (OS.indexOf("win") >= 0) {
+                            	while (interfaces.hasMoreElements() && notFound) {
+                                    NetworkInterface iface = interfaces.nextElement();
+                                    // filters out 127.0.0.1 and inactive interfaces
+                                    if (iface.isLoopback() || !iface.isUp())
+                                        continue;
+         
+                                    Enumeration<InetAddress> addresses = iface.getInetAddresses();
+                                    while(addresses.hasMoreElements() && notFound) {
+                                        this.myIp = addresses.nextElement();  
+                                        System.out.println("My ip: " + this.myIp);
+                                        System.out.println(this.myIp.getHostName().matches("^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$"));
+                                        if(this.myIp.getHostName().matches("^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$")){
+                                            this.notFound = false;
+                                        }
+                                    }
+                                    System.out.println("====");
                                 }
                             }
+                            else {
+                            	while (interfaces.hasMoreElements()) {
+                                    NetworkInterface iface = interfaces.nextElement();
+                                    // filters out 127.0.0.1 and inactive interfaces
+                                    if (iface.isLoopback() || !iface.isUp())
+                                        continue;
+         
+                                    Enumeration<InetAddress> addresses = iface.getInetAddresses();
+                                    while(addresses.hasMoreElements()) {
+                                        this.myIp = addresses.nextElement();                           
+                                    }
+                                }
+                            } 
                         } catch (SocketException e) {
                             throw new RuntimeException(e);
                         }
@@ -181,7 +204,7 @@ import packet.Message;
                             //this.chatGUI.updateList(this.getUserListText()); // TEST affichage userlist dans le GUI
                             // Add a message in the conv.
                             try {
-								this.conv.addMessage(new Message(new Date(), "System", ((Bye) packet).getNickname() + " has left.", InetAddress.getByName("0.0.0.0")));
+								this.conv.addMessage(new Message(new Date(), "System", ((Bye) packet).getNickname() + " has left.", InetAddress.getByName("0.0.0.0"), true));
 							} catch (UnknownHostException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();

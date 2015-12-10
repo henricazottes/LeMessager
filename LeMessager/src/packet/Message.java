@@ -6,14 +6,16 @@ public class Message extends Packet{
 	private Date time;
 	private String from;
 	private String payload;
-	private InetAddress ip ;
+	private InetAddress ip;
+	private Boolean broadcast;
 	static final long serialVersionUID = 45L;
 	
-	public Message(Date time, String from, String payload, InetAddress ip){
+	public Message(Date time, String from, String payload, InetAddress ip, boolean broadcast){
 		this.time = time;
 		this.from = from;
 		this.payload = payload;
 		this.ip = ip;
+		this.broadcast = broadcast;
 	}
 
 	public InetAddress getIp() {
@@ -46,5 +48,13 @@ public class Message extends Packet{
 
 	public void setPayload(String payload) {
 		this.payload = payload;
+	}
+	
+	public Boolean isBroadcast() {
+		return this.broadcast;
+	}
+
+	public void setBroadcast(boolean broadcast) {
+		this.broadcast = broadcast;
 	}
 }

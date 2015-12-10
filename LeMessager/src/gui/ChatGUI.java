@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.Date;
@@ -24,6 +25,7 @@ import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -171,8 +173,8 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				
-				cc.sendMessage(new Message(new Date(), cc.getMyName(), sendMessage.getText(), cc.getMyIp()));
+				cc.sendMessage(myList.getSelectedValue(), new Message(new Date(), cc.getMyName(), sendMessage.getText(), cc.getMyIp()));
+				recvMessage.setText(recvMessage.getText()+"\n"+cc.getMyName()+" : "+sendMessage.getText());
 				sendMessage.setText("");
 			}
 		});
@@ -182,7 +184,8 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
 				
-				cc.sendMessage(new Message(new Date(), cc.getMyName(), sendMessage.getText(), cc.getMyIp()));
+				cc.sendMessage(myList.getSelectedValue(),new Message(new Date(), cc.getMyName(), sendMessage.getText(), cc.getMyIp()));
+				recvMessage.setText(recvMessage.getText()+"\n"+cc.getMyName()+" : "+sendMessage.getText());
 				sendMessage.setText("");
 			}
 		});
@@ -212,7 +215,7 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
         
         
         panel.add(listPanel);
-        
+        this.addWindowListener(this);
         
         
         //setVisible(true); // display this frame // now this method is called in LoginGUI to switch from Login to Chat
@@ -221,7 +224,7 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
 	@Override
 	public void focusGained(FocusEvent arg0) {
 		// TODO Auto-generated method stub
-		
+		//this.myList.setSelectedIndex(0);
 	}
 
 	@Override
@@ -233,7 +236,7 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
 	@Override
 	public void windowActivated(WindowEvent arg0) {
 		// TODO Auto-generated method stub
-		
+		//this.myList.setSelectedIndex(0);
 	}
 
 	@Override
@@ -245,7 +248,8 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
 	@Override
 	public void windowClosing(WindowEvent arg0) {
 		// TODO Auto-generated method stub
-		
+        	this.cc.processGoodbye();
+        	System.exit(0);
 	}
 
 	@Override
@@ -257,7 +261,7 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
 	@Override
 	public void windowDeiconified(WindowEvent arg0) {
 		// TODO Auto-generated method stub
-		
+		//this.myList.setSelectedIndex(0);
 	}
 
 	@Override
@@ -269,7 +273,9 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
 	@Override
 	public void windowOpened(WindowEvent arg0) {
 		// TODO Auto-generated method stub
-		
+		//this.myList.setSelectedIndex(0);
+		this.updateList();
+		this.myList.setSelectedIndex(0);
 	}
 
 	@Override
@@ -280,7 +286,7 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
 	}
 
 	public void updateList() {
-		// TODO Auto-generated method stu
+		// TODO Auto-generated method stub
 		listModel.removeAllElements();
 		for (User user : cc.getUserList().getUserList()) {
 			listModel.addElement(user);
@@ -294,5 +300,4 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
 		this.recvMessage.setText(this.recvMessage.getText()+"\n"+cc.getConv().getLastMessage().getFrom()+" : "+cc.getConv().getLastMessage().getPayload());
 		this.repaint();
 	}
-	//setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
 }

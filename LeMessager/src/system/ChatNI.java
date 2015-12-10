@@ -56,7 +56,7 @@ public class ChatNI {
         }
         
         public void sendMessage(User u, Message msg){
-        	this.niUDP.sendMessage(msg);
+        	this.niUDP.sendMessage(u, msg);
         }
         
         public void receivePackets(){

@@ -1,5 +1,7 @@
 package models;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import java.util.Iterator;
@@ -13,8 +15,12 @@ public class UserList extends Observable {
 	//private DefaultListModel userList;
 	private ArrayList<User> userList;
 	
-	public UserList(){
+	public UserList() throws UnknownHostException{
 		this.userList = new ArrayList<User>();
+		User bc = new User("BROADCAST", InetAddress.getByName("255.255.255.255"));
+		this.userList.add(bc);
+		System.out.println("user broadcast créé");
+		System.out.println(userList.toString());
 	}
 	
 	public void addUser(User u){

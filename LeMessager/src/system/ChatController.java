@@ -104,8 +104,8 @@ import packet.Message;
                     this.chatNI.sendGoodbye(this.myName);
             }
             
-            public void sendMessage(Message msg){
-            	this.chatNI.sendMessage(null, msg);
+            public void sendMessage(User u, Message msg){
+            	this.chatNI.sendMessage(u, msg);
             }
            
             public void processPackets(){
@@ -160,12 +160,14 @@ import packet.Message;
                     }else if (packet instanceof Message){
                            
                             // Add message in conversation
+                    	if (!((Message) packet).getIp().equals(this.myIp)) {
                             this.conv.addMessage((Message) packet);
                             this.chatGUI.updateConv();
                             User newUser = new User(((Message) packet).getFrom(),((Message) packet).getIp());
                             if(!this.userList.contains(newUser)){
                             	this.userList.addUser(newUser);
                             }
+                    	}
                             
                            
                             // LOG

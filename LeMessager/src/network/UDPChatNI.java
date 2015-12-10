@@ -72,8 +72,9 @@ public class UDPChatNI implements Runnable {
         	System.out.println("Goodbye sent.");
         }
  
-        public void sendMessage(Message msg) {
-        	sendBroadcast(msg);
+        public void sendMessage(User u, Message msg) {
+        	sendUnicast(msg, u.getIp());
+        	//sendBroadcast(msg);
                
         }
  

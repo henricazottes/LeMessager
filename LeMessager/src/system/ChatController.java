@@ -60,13 +60,12 @@ import packet.Message;
                                 // filters out 127.0.0.1 and inactive interfaces
                                 if (iface.isLoopback() || !iface.isUp())
                                     continue;
-     
+                                
+                                // Search the IP address     
                                 Enumeration<InetAddress> addresses = iface.getInetAddresses();
                                 while(addresses.hasMoreElements() && notFound) {
                                     this.myIp = addresses.nextElement();  
-                                    System.out.println("My ip: " + this.myIp);
-                                    System.out.println(this.myIp.getHostName().matches("^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$"));
-                                    if(this.myIp.getHostName().matches("^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$")){
+                                    if(this.myIp.getHostName().toString().substring(1).matches("^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$")){
                                         this.notFound = false;
                                     }
                                 }
@@ -215,6 +214,7 @@ import packet.Message;
                                     System.out.println("New user added: " + ((HelloBack) packet).getNickname() + " from: " +((HelloBack) packet).getIp());
                                     System.out.println(this.userList);
                                     this.chatGUI.updateList();
+                                    this.convs.put(((HelloBack) packet).getNickname(), new Conversation());
                                     this.chatGUI.repaint();
                             }else{
                                     // LOG
@@ -228,13 +228,14 @@ import packet.Message;
                     		User newUser = new User(((Message) packet).getFrom(),((Message) packet).getIp());
                             if(!this.userList.contains(newUser)){
                             	this.userList.addUser(newUser);
-                            	this.convs.put(((Hello) packet).getNickname(), new Conversation());
+                            	this.convs.put(((Message) packet).getFrom(), new Conversation());
                             }
-                            
-                            this.convs.get(((Message) packet).getFrom()).addMessage((Message) packet);
-                            this.setConv(this.convs.get(((Message) packet).getFrom()));
-                            this.chatGUI.updateConv(this.convs.get(((Message) packet).getFrom()));
-                            
+                            if(((Message) packet).isBroadcast()){
+                            	this.convs.get("BROADCAST").addMessage((Message) packet);
+                            }else{
+                            	this.convs.get(((Message) packet).getFrom()).addMessage((Message) packet);
+                            }            
+                            this.chatGUI.updateConv(this.getConv());                            
                     	}
                             
                            
@@ -246,7 +247,6 @@ import packet.Message;
                             // Remove the user from the userlist
                             this.userList.removeUser(new User(((Bye) packet).getNickname(), ((Bye) packet).getIp()));
                             System.out.println(this.userList);
-                            //this.chatGUI.updateList(this.getUserListText()); // TEST affichage userlist dans le GUI
                             // Add a message in the conv.
                             try {
 								this.conv.addMessage(new Message(new Date(), "System", ((Bye) packet).getNickname() + " has left.", InetAddress.getByName("0.0.0.0"), true));

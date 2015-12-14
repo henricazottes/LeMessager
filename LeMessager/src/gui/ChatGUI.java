@@ -67,8 +67,6 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
 		this.myList = new JList<User>(this.listModel);
     	setBounds(100,100,800,600);   
     	this.setLocationRelativeTo(null);
-    	
-    	//String[] argsthis.cc = cc;
     	init();
 	}
 	
@@ -137,8 +135,6 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
 		});
         
         JPanel listPanel = new JPanel(new BorderLayout());
-        //String[] data = {"Broadcast","Henri", "Alfred", "Helene", "Pierre", "Tartanpion", "Arthur", "Titicaca"};
-        //JList myList = new JList(cc.getUserList().getUserList().toArray());
         
         JScrollPane listScroller = new JScrollPane(myList);
         listScroller.setPreferredSize(new Dimension(220, listScroller.getHeight()));
@@ -243,8 +239,7 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
         this.addWindowListener(this);
         
         
-        //setVisible(true); // display this frame // now this method is called in LoginGUI to switch from Login to Chat
-	}
+   }
 
 	@Override
 	public void focusGained(FocusEvent arg0) {
@@ -298,7 +293,6 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
 	@Override
 	public void windowOpened(WindowEvent arg0) {
 		// TODO Auto-generated method stub
-		//this.myList.setSelectedIndex(0);
 		this.updateList();
 		this.myList.setSelectedIndex(0);
 	}
@@ -316,13 +310,11 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
 		for (User user : cc.getUserList().getUserList()) {
 			listModel.addElement(user);
 		}
-		//System.out.println("==========\nATTENTION GROS DEBUG DE PORC : \n"+ cc.getUserList().toStringArray().toArray());
 		System.out.println("Updated the list");
 		this.repaint();
 	}
 	
 	public void updateConv(Conversation conv) {
-		//this.recvMessage.setText(this.recvMessage.getText()+"\n"+cc.getConv().getLastMessage().getFrom()+" : "+cc.getConv().getLastMessage().getPayload());
 		this.recvMessage.setText(conv.toString());
 		this.repaint();
 	}

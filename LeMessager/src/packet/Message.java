@@ -1,5 +1,6 @@
 package packet;
 import java.net.InetAddress;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Message extends Packet{
@@ -26,8 +27,9 @@ public class Message extends Packet{
 		this.ip = ip;
 	}
 
-	public Date getTime() {
-		return time;
+	public String getTime() {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("k'h'mm");
+		return dateFormat.format(this.time);
 	}
 
 	public void setTime(Date time) {

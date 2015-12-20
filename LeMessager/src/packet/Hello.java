@@ -1,8 +1,6 @@
 package packet;
 import java.net.InetAddress;
 
-// coucou c'est moi
-// moi c'est henri
 public class Hello extends Packet{
 	private String nickname;
 	private InetAddress ip;

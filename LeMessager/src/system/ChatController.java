@@ -150,6 +150,7 @@ import packet.Message;
 	        		System.out.println("user broadcast cr��");
 	        		System.out.println(userList.toString());
 	        		this.convs.put("BROADCAST", new Conversation());
+	        		this.setConv(convs.get("BROADCAST"));
 				} catch (UnknownHostException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -171,10 +172,14 @@ import packet.Message;
             }
            
             public void processPackets(){
+            	
                     packet = this.chatNI.getLastPacket();
                    
                     System.out.println(packet.getClass() + " received.");
                    
+                    /*=================
+                     *     Hello
+                     *=================*/
                     if(packet instanceof Hello){
                            
                             if(!(((Hello) packet).getNickname().equals(this.myName)
@@ -187,7 +192,6 @@ import packet.Message;
                                             this.chatGUI.updateList();
                                             this.convs.put(((Hello) packet).getNickname(), new Conversation());
                                             this.chatGUI.repaint();
-                                            //this.chatGUI.updateList(this.getUserListText()); // TEST affichage userlist dans le GUI
                                     }
                                    
                                    
@@ -202,17 +206,21 @@ import packet.Message;
                                     System.out.println(" (local hello)");
                             }
                            
-                           
+                            
+                    /*=====================
+                     *      Hello Back
+                     *=====================*/  
                     }else if (packet instanceof HelloBack){        
                            
                             if(!(((HelloBack) packet).getNickname().equals(this.myName)
                                             && ((HelloBack) packet).getIp().equals(this.myIp))){ // HelloBack from me
                                     // Add the user in the user list
                                     this.userList.addUser(new User(((HelloBack) packet).getNickname(), ((HelloBack) packet).getIp()));
-                                    //this.chatGUI.updateList(this.getUserListText()); // TEST affichage userlist dans le GUI
+                                    
                                     // LOG
                                     System.out.println("New user added: " + ((HelloBack) packet).getNickname() + " from: " +((HelloBack) packet).getIp());
                                     System.out.println(this.userList);
+                                    
                                     this.chatGUI.updateList();
                                     this.convs.put(((HelloBack) packet).getNickname(), new Conversation());
                                     this.chatGUI.repaint();
@@ -220,10 +228,13 @@ import packet.Message;
                                     // LOG
                                     System.out.println(" (local helloback)");
                             }
-                           
+                       
+	                /*==================
+	                 *      Message
+	                 *==================*/
                     }else if (packet instanceof Message){
                            
-                            // Add message in conversation
+                        
                     	if (!((Message) packet).getIp().equals(this.myIp)) {
                     		User newUser = new User(((Message) packet).getFrom(),((Message) packet).getIp());
                             if(!this.userList.contains(newUser)){
@@ -237,16 +248,19 @@ import packet.Message;
                             }            
                             this.chatGUI.updateConv(this.getConv());                            
                     	}
-                            
-                           
+                                                       
                             // LOG
                             System.out.println("New message : \n" + ((Message) packet).getPayload());
-                           
+                    
+                    /*===============
+                     *      Bye
+                     *===============*/
                     }else if (packet instanceof Bye){
                            
                             // Remove the user from the userlist
                             this.userList.removeUser(new User(((Bye) packet).getNickname(), ((Bye) packet).getIp()));
                             System.out.println(this.userList);
+                            
                             // Add a message in the conv.
                             try {
 								this.conv.addMessage(new Message(new Date(), "System", ((Bye) packet).getNickname() + " has left.", InetAddress.getByName("0.0.0.0"), true));
@@ -254,13 +268,13 @@ import packet.Message;
 								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
+                            
                             this.chatGUI.updateList();
-                            this.chatGUI.repaint();
                             
                     }else if (packet instanceof FileRequest){
-                           
+                           // To Do
                     }else if (packet instanceof FileResponse){
-                           
+                           // To Do
                     }
                    
             }
@@ -284,11 +298,5 @@ import packet.Message;
 			public void setConv(Conversation conv) {
 				this.conv = conv;
 			}
-           
-            // Méthode pour récupérer la liste (elle sera envoyée au GUI par la méthode updateList dans ChatGUI)
-           // public String getUserListText() {
-            //        return this.getUserList();
-            //}
-     
     }
 

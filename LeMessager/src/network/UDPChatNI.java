@@ -32,53 +32,46 @@ public class UDPChatNI implements Runnable {
 		public UDPChatNI(ChatController cc){
 			this.cc = cc;
 		}
- 
-        //public InetAddress getNetworkBroadcastAddresses() {
-               
-        //}
- 
-        public void processPacket(DatagramPacket packet) {
-               
-        }
- 
-        public void sendHello(String name) {        	  	
-			// construct packet
+  
+        public void sendHello(String name) { 
 			InetAddress ip = cc.getMyIp();
-			Hello myHelloPacket = new Hello(name, ip);
-			
-			// send packet
+			Hello myHelloPacket = new Hello(name, ip);			
 			sendBroadcast(myHelloPacket);		
 			
 			System.out.println("Hello sent.");
         }
         
-        public void sendHelloBack(String name, InetAddress ipDest) {        	  	
-			// construct packet
-			InetAddress ip = cc.getMyIp();
-			HelloBack myHelloBackPacket = new HelloBack(name, ip);
+        public void sendHelloBack(String name, InetAddress ipDest) {  
+        	InetAddress ip = cc.getMyIp();
+			HelloBack myHelloBackPacket = new HelloBack(name, ip);		
 			
-			// send packet
-			sendUnicast(myHelloBackPacket, ipDest);			       	
+			sendPacket(myHelloBackPacket, ipDest);			       	
         }
  
         public void sendGoodbye(String name) {
-        	// construct packet
 			InetAddress ip = cc.getMyIp();
 			Bye myByePacket = new Bye(name, ip);
 			
-			// send packet
 			sendBroadcast(myByePacket);	
         	
         	System.out.println("Goodbye sent.");
         }
- 
-        public void sendMessage(User u, Message msg) {
-        	sendUnicast(msg, u.getIp());
-        	//sendBroadcast(msg);
-               
+        
+        public void sendMessage(User u, Message msg){
+        	sendPacket(msg,u.getIp());
+        }
+        
+        private void sendBroadcast(Packet p){
+        	try {
+				sendPacket(p, InetAddress.getByName("255.255.255.255"));
+			} catch (UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         }
  
-        private void sendUnicast(Packet p, InetAddress ipDest) {
+        private void sendPacket(Packet p, InetAddress ipDest) {
+        	
         	try {
 				
 				byte[] sendData = UDPChatNI.serialize(p);
@@ -104,34 +97,7 @@ public class UDPChatNI implements Runnable {
         	System.out.println(p.getClass() + " sent.");
         }
  
-        private void sendBroadcast(Packet p) {        	
-			try {
-				
-				byte[] sendData = UDPChatNI.serialize(p);
-				DatagramPacket udpPacket;
-				udpPacket = new DatagramPacket(sendData, sendData.length, InetAddress.getByName("255.255.255.255"), 42025);
-				
-				// create UDP socket
-				DatagramSocket clientSocket = new DatagramSocket();
-			    
-				// send packet			    
-			    clientSocket.send(udpPacket);
-			    
-			    //close socket			    
-			    clientSocket.close();
-			} catch (UnknownHostException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			
-               
-        }
-        
-               
+                     
         public void receivePackets(){      	
 			try {
 				// create udp socket

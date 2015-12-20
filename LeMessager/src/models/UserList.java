@@ -1,18 +1,14 @@
 package models;
 
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-
 import java.util.Iterator;
 
-import javax.swing.DefaultListModel;
 
-import designPatterns.Observable;
 
-public class UserList extends Observable {
+public class UserList {
 
-	//private DefaultListModel userList;
+	
 	private ArrayList<User> userList;
 	
 	public UserList() throws UnknownHostException{
@@ -21,8 +17,6 @@ public class UserList extends Observable {
 	
 	public void addUser(User u){
 		this.userList.add(u);
-		//this.nameList.addElement(u);
-		//this.notifyObs();
 	}
 	
 	public void removeUser(User u){
@@ -38,7 +32,6 @@ public class UserList extends Observable {
 	
 	@Override
 	public String toString(){
-		
 		String result = "\n========";
 		Iterator it = this.userList.iterator();
 		while(it.hasNext()){

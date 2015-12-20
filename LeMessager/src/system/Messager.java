@@ -25,8 +25,7 @@ import network.UDPChatNI;
                 
                 cc.addChatNI(chatNI);
                 cc.addChatGUI(chatGUI); 
-                cc.addLoginGUI(loginGUI);
-                
+                cc.addLoginGUI(loginGUI);                
             }            
     }
 

@@ -1,11 +1,9 @@
 package models;
 
 import java.util.ArrayList;
-
-import designPatterns.Observable;
 import packet.Message;
 
-public class Conversation extends Observable {
+public class Conversation {
 	private ArrayList<Message> conv;
 	private String convText;
 	
@@ -16,8 +14,7 @@ public class Conversation extends Observable {
 	
 	public void addMessage(Message m){
 		this.conv.add(m);
-		this.convText += m.getFrom() + ":" + m.getPayload() + "\n";
-		//this.notify();
+		this.convText += m.getTime() + " | " + m.getFrom() + ": " + m.getPayload() + "\n";
 	}
 	
 	public Message getLastMessage() {

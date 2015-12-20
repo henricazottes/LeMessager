@@ -51,18 +51,21 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
 	private ChatController cc;
 	private DefaultListModel<User> listModel;
 	private JList<User> myList;
+	
+	private JTextArea recvMessage;
+	private JScrollPane listScroller;
+	
 	public JList<User> getMyList() {
 		return myList;
 	}
 
-	private JTextArea recvMessage;
-	private JScrollPane listScroller;
+	
 	
 	public ChatGUI(ChatController cc){
 		super(); 
 		this.cc = cc;
-		this.cc.createBroadcast();
-		this.cc.createRobot();
+		this.cc.createBroadcast(); 	// Create user BROADCAST
+		this.cc.createRobot();		// Create use ROBOT, for local test purposes
 		this.listModel = new DefaultListModel<User>();
 		this.myList = new JList<User>(this.listModel);
     	setBounds(100,100,800,600);   
@@ -87,7 +90,7 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
          * ============ */
         
         this.setIconImage(new ImageIcon("img/title_img.png").getImage());
-      //Where the GUI is created:
+        
         JMenuBar menuBar;
         JMenu menu, submenu;
         JMenuItem menuItem;
@@ -98,9 +101,7 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
         //Build the first menu.
         menu = new JMenu("File");
         menu.setMnemonic(KeyEvent.VK_A);
-        menuBar.add(menu);
-
-        //a group of JMenuItems                
+        menuBar.add(menu);           
         
         menuItem = new JMenuItem("Disconnect",new ImageIcon("img/logout.png"));
         menuItem.addActionListener(this);
@@ -120,16 +121,17 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
         
         this.setJMenuBar(menuBar);
         
-        // List part
+        /* ================
+         *     USER List 
+         * ================ */
         
         this.myList.addListSelectionListener(new ListSelectionListener() {			
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				// TODO Auto-generated method stub
 				if (e.getValueIsAdjusting()) {
-					cc.setConv(cc.getConvs().get(cc.getChatGUI().getMyList().getSelectedValue().getName()));
+					cc.setConv(cc.getConvs().get(myList.getSelectedValue().getName()));
 					recvMessage.setText(cc.getConv().toString());
-					System.out.println("coucou");
 	            }
 			}
 		});
@@ -140,6 +142,8 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
         listScroller.setPreferredSize(new Dimension(220, listScroller.getHeight()));
         listPanel.add(listScroller, "West");
         
+        // Define the border style of the list
+        
         EmptyBorder margin = new EmptyBorder(10,5,5,5);
         EmptyBorder marginBottom = new EmptyBorder(0,0,10,0);
         EmptyBorder padding = new EmptyBorder(10,5,10,5);
@@ -149,13 +153,21 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
         CompoundBorder peopleBorder = new CompoundBorder(margin, people);
         peopleBorder = new CompoundBorder(peopleBorder, padding);
         peopleBorder = new CompoundBorder(peopleBorder, depth);
+        
+        // Set the border
+        
         listScroller.setBorder(peopleBorder);
         
-        // TextArea       
+        /* ===========================
+         *     Send and Receive area 
+         * =========================== */   
+        
         JPanel convPanel = new JPanel();
         convPanel.setLayout(new BoxLayout(convPanel, BoxLayout.PAGE_AXIS));
         recvMessage = new JTextArea();
         recvMessage.setEditable(false);
+        
+        // force the scroll bar to bottom
         recvMessage.getDocument().addDocumentListener(new DocumentListener() {
 			
 			@Override
@@ -183,7 +195,7 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
         
         
         
-        // Textfield + Button
+        // Textfield and Button - SEND part
         final JTextField sendMessage = new JTextField();
         
         JButton send = new JButton("Send");
@@ -191,7 +203,7 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				Message msg = new Message(new Date(), cc.getMyName(), sendMessage.getText(), cc.getMyIp(), myList.getSelectedValue().getName().equals("BROADCAST"));
+				Message msg = new Message(new Date(), cc.getMyName(), sendMessage.getText(), cc.getMyIp(), myList.getSelectedValue().getName().equals("BROADCAST")); // ...equals("BROADCAST") is a boolean used  for conversation management
 				cc.sendMessage(myList.getSelectedValue(), msg);
 				cc.getConv().addMessage(msg);
 				recvMessage.setText(cc.getConv().toString());
@@ -207,17 +219,19 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
 				cc.sendMessage(myList.getSelectedValue(), msg);
 				cc.getConv().addMessage(msg);
 				recvMessage.setText(cc.getConv().toString());
-				sendMessage.setText("");
+				sendMessage.setText("");	
 			}
 		});
-        //send.addActionListener(this);
+        
+
+        
         JPanel messagePanel = new JPanel();
         messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.LINE_AXIS));
         messagePanel.add(sendMessage);
         messagePanel.add(send);
         
         
-        // Combined recv and send parts
+        // Combine receive and send parts in one panel
         JPanel recvsendPanel = new JPanel();
         recvsendPanel.setLayout(new BorderLayout()); 
         
@@ -230,16 +244,42 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
         recvsendPanel.setBorder(recvsendBorder);
         
         
-        listPanel.add(recvsendPanel, "Center");
-        
-        
-        
+        listPanel.add(recvsendPanel, "Center");        
         
         panel.add(listPanel);
         this.addWindowListener(this);
         
         
    }
+	
+	@Override
+	public void windowOpened(WindowEvent arg0) {
+		// TODO Auto-generated method stub
+		this.updateList();
+		this.myList.setSelectedIndex(0);
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+		// TODO Auto-generated method stub
+		this.cc.processGoodbye();
+		System.exit(0);
+	}
+
+	public void updateList() {
+		// TODO Auto-generated method stub
+		listModel.removeAllElements();
+		for (User user : cc.getUserList().getUserList()) {
+			listModel.addElement(user);
+		}
+		System.out.println("Updated the list");
+		this.repaint();
+	}
+	
+	public void updateConv(Conversation conv) {
+		this.recvMessage.setText(conv.toString());
+		this.repaint();
+	}
 
 	@Override
 	public void focusGained(FocusEvent arg0) {
@@ -288,34 +328,5 @@ public class ChatGUI extends JFrame implements ActionListener, WindowListener, F
 	public void windowIconified(WindowEvent arg0) {
 		// TODO Auto-generated method stub
 		
-	}
-
-	@Override
-	public void windowOpened(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-		this.updateList();
-		this.myList.setSelectedIndex(0);
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent arg0) {
-		// TODO Auto-generated method stub
-		this.cc.processGoodbye();
-		System.exit(0);
-	}
-
-	public void updateList() {
-		// TODO Auto-generated method stub
-		listModel.removeAllElements();
-		for (User user : cc.getUserList().getUserList()) {
-			listModel.addElement(user);
-		}
-		System.out.println("Updated the list");
-		this.repaint();
-	}
-	
-	public void updateConv(Conversation conv) {
-		this.recvMessage.setText(conv.toString());
-		this.repaint();
 	}
 }

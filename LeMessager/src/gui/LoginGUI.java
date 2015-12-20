@@ -59,6 +59,10 @@ import system.ChatController;
        
         void init(){      	
             
+        	/* ============
+             *     Windows 
+             * ============ */
+        	
             this.setResizable(false);
             JPanel panel = new JPanel();
             panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
@@ -174,13 +178,7 @@ import system.ChatController;
 				public void actionPerformed(ActionEvent arg0) {
 					// TODO Auto-generated method stub
 					if(goodNickname){
-						cc.setMyName(nickname.getText());  
-						cc.getChatGUI().setTitle("Connected as " + cc.getMyName());
-						cc.getChatGUI().setVisible(true);	// switch to ChatGUI
-						cc.getLoginGUI().dispose();			// close LoginGUI
-						System.out.println("Connect pressed " + cc.getMyName());
-						cc.processHello();
-						
+						openChatGUI(nickname);						
 					}else{
 						nickname.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.red));
 					}
@@ -192,13 +190,7 @@ import system.ChatController;
 				public void actionPerformed(ActionEvent arg0) {
 					// TODO Auto-generated method stub
 					if(goodNickname){
-						cc.setMyName(nickname.getText());  
-						cc.getChatGUI().setTitle("Connected as " + cc.getMyName());
-						cc.getChatGUI().setVisible(true);	// switch to ChatGUI
-						cc.getLoginGUI().dispose();			// close LoginGUI
-						System.out.println("Connect pressed " + cc.getMyName());
-						cc.processHello();
-						
+						openChatGUI(nickname);						
 					}else{
 						nickname.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.red));
 					}
@@ -212,49 +204,18 @@ import system.ChatController;
             panel.add(Box.createRigidArea(new Dimension(0,10)));
             panel.add(connect);
             
-            /*
-            
-             lnickname = new JLabel("Nickname: ");
-             // lnickname.set
-             tfnickname = new JTextField(10);
-             bconnect = new JButton("Connect");
-             bconnect.addActionListener(this);
-             bdisconnect = new JButton("Disconnect");
-             
-             // Chat window
-             //textPanel = new JPanel();
-             taConv = new JTextArea(20,45);
-             taConv.setEditable(false);
-             taMsg = new JTextArea(2, 45);
-             taMsg.setEditable(true);
-             taUserlist = new JTextArea(2, 45);
-             taUserlist.setEditable(false);
-             
-             // TEST
-             taUserlist.setText("Henri\n Zakaria");
-             // A VOIR // taUserList.setText(UserList.ToString());
-             
-             lAlfred = new JLabel("RocketTeamChatSystem");
-             //textPanel.add("North", taConv);
-             //textPanel.add("South", taMsg);
-             
-             this.setTitle("ChatSystem");
-             this.setSize(300, 300);
-            // configures the JFrame layout using a Grid layout
-             this.setLayout(new GridLayout(3,2));
-             // places the components in the layout for Connection
-             this.displayConnect();
-             this.setDefaultCloseOperation(EXIT_ON_CLOSE); // Exit program when Windows closes
-             // packs the fenetre: size is calculated
-             // regarding the added components
-             this.pack();
-             // the JFrame is visible now
-             this.setVisible(true);*/
-            
+                       
             setVisible(true); // display this frame
         }       
        
- 
+        void openChatGUI(JTextField nickname){
+        	cc.setMyName(nickname.getText());
+        	cc.getChatGUI().setTitle("Connected as " + cc.getMyName());
+			cc.getChatGUI().setVisible(true);	// display ChatGUI
+			cc.getLoginGUI().dispose();			// close LoginGUI
+			cc.processHello();
+        }
+        
         @Override
         public void windowActivated(WindowEvent e) {
                 // TODO Auto-generated method stub
